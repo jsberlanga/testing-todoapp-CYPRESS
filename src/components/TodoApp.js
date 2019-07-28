@@ -64,7 +64,7 @@ export default class TodoApp extends Component {
     };
 
     completeTodo(updatedTodo).then(({ data }) => {
-      debugger;
+      // debugger;
       const todos = this.state.todos.map(t => (t.id === data.id ? data : t));
       this.setState({ todos: todos });
     });
