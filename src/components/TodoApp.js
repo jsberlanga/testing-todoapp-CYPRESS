@@ -4,7 +4,8 @@ import TodoForm from "./TodoForm";
 import TodoList from "./TodoList";
 import Footer from "./Footer";
 
-import { saveTodo, loadTodos, deleteTodo } from "../lib/service";
+import { saveTodo, loadTodos, deleteTodo, completeTodo } from "../lib/service";
+import { filterTodos } from "../lib/utils";
 
 export default class TodoApp extends Component {
   constructor(props) {
@@ -19,6 +20,7 @@ export default class TodoApp extends Component {
     this.handleInputChange = this.handleInputChange.bind(this);
     this.handleFormSubmit = this.handleFormSubmit.bind(this);
     this.handleDelete = this.handleDelete.bind(this);
+    this.handleComplete = this.handleComplete.bind(this);
   }
 
   componentDidMount() {
@@ -54,6 +56,20 @@ export default class TodoApp extends Component {
     );
   }
 
+  handleComplete(todo) {
+    const targetTodo = this.state.todos.find(t => todo.id === t.id);
+    const updatedTodo = {
+      ...targetTodo,
+      isComplete: !targetTodo.isComplete
+    };
+
+    completeTodo(updatedTodo).then(({ data }) => {
+      debugger;
+      const todos = this.state.todos.map(t => (t.id === data.id ? data : t));
+      this.setState({ todos: todos });
+    });
+  }
+
   render() {
     const remainingTodos = this.state.todos.filter(todo => !todo.isComplete)
       .length;
@@ -70,9 +86,15 @@ export default class TodoApp extends Component {
             />
           </header>
           <section className="main">
-            <TodoList
-              handleDelete={this.handleDelete}
-              todos={this.state.todos}
+            <Route
+              path="/:filter?"
+              render={({ match }) => (
+                <TodoList
+                  handleDelete={this.handleDelete}
+                  handleComplete={this.handleComplete}
+                  todos={filterTodos(match.params.filter, this.state.todos)}
+                />
+              )}
             />
           </section>
           <Footer remainingTodos={remainingTodos} />
