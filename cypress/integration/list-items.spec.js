@@ -14,7 +14,7 @@ describe("List items", () => {
     });
   });
 
-  it.only("removes a todo", () => {
+  it("removes a todo", () => {
     cy.route({
       url: "/api/todos/1",
       method: "DELETE",
@@ -37,7 +37,7 @@ describe("List items", () => {
       .and("not.contain", "Milk");
   });
 
-  it.only("Marks an incomplete item complete", () => {
+  it("Marks an incomplete item complete", () => {
     cy.fixture("todos").then(todos => {
       const target = Cypress._.head(todos);
       cy.route(
